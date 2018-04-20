@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.BusButton = new System.Windows.Forms.Button();
             this.comboBoxCanDevice = new System.Windows.Forms.ComboBox();
@@ -37,8 +38,11 @@
             this.BusLoad = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.richTextBoxDisplay = new System.Windows.Forms.RichTextBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // BusButton
@@ -118,11 +122,26 @@
             // 
             // richTextBoxDisplay
             // 
+            this.richTextBoxDisplay.ContextMenuStrip = this.contextMenuStrip1;
             this.richTextBoxDisplay.Location = new System.Drawing.Point(9, 20);
             this.richTextBoxDisplay.Name = "richTextBoxDisplay";
             this.richTextBoxDisplay.Size = new System.Drawing.Size(302, 248);
             this.richTextBoxDisplay.TabIndex = 0;
             this.richTextBoxDisplay.Text = "";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(107, 26);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -137,6 +156,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -150,6 +170,8 @@
         private System.Windows.Forms.Button ReadButton;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RichTextBox richTextBoxDisplay;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }
 

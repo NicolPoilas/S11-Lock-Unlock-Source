@@ -79,6 +79,11 @@ namespace S11_Lock_Unlock_Source
             }
         }
 
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBoxDisplay.Clear();
+        }
+
         #region Timer
         public delegate void Tick_10ms();
         public delegate void Tick_50ms();
