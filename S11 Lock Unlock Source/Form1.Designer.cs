@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.BusButton = new System.Windows.Forms.Button();
             this.comboBoxCanDevice = new System.Windows.Forms.ComboBox();
             this.comboBoxCanBaudRate = new System.Windows.Forms.ComboBox();
@@ -42,20 +43,20 @@
             // 
             // BusButton
             // 
-            this.BusButton.Location = new System.Drawing.Point(323, 20);
+            this.BusButton.Location = new System.Drawing.Point(236, 20);
             this.BusButton.Name = "BusButton";
             this.BusButton.Size = new System.Drawing.Size(75, 23);
             this.BusButton.TabIndex = 2;
-            this.BusButton.Text = "On-Line";
+            this.BusButton.Text = "Bus On";
             this.BusButton.UseVisualStyleBackColor = true;
             this.BusButton.Click += new System.EventHandler(this.BusButton_Click);
             // 
             // comboBoxCanDevice
             // 
             this.comboBoxCanDevice.FormattingEnabled = true;
-            this.comboBoxCanDevice.Location = new System.Drawing.Point(35, 20);
+            this.comboBoxCanDevice.Location = new System.Drawing.Point(9, 22);
             this.comboBoxCanDevice.Name = "comboBoxCanDevice";
-            this.comboBoxCanDevice.Size = new System.Drawing.Size(260, 20);
+            this.comboBoxCanDevice.Size = new System.Drawing.Size(220, 20);
             this.comboBoxCanDevice.TabIndex = 8;
             // 
             // comboBoxCanBaudRate
@@ -67,7 +68,7 @@
             "200",
             "250",
             "500"});
-            this.comboBoxCanBaudRate.Location = new System.Drawing.Point(35, 56);
+            this.comboBoxCanBaudRate.Location = new System.Drawing.Point(9, 51);
             this.comboBoxCanBaudRate.Name = "comboBoxCanBaudRate";
             this.comboBoxCanBaudRate.Size = new System.Drawing.Size(82, 20);
             this.comboBoxCanBaudRate.TabIndex = 9;
@@ -81,14 +82,14 @@
             this.groupBox1.Controls.Add(this.BusButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(422, 92);
+            this.groupBox1.Size = new System.Drawing.Size(320, 83);
             this.groupBox1.TabIndex = 38;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "CAN ";
             // 
             // ReadButton
             // 
-            this.ReadButton.Location = new System.Drawing.Point(323, 54);
+            this.ReadButton.Location = new System.Drawing.Point(236, 49);
             this.ReadButton.Name = "ReadButton";
             this.ReadButton.Size = new System.Drawing.Size(75, 23);
             this.ReadButton.TabIndex = 3;
@@ -99,7 +100,7 @@
             // BusLoad
             // 
             this.BusLoad.AutoSize = true;
-            this.BusLoad.Location = new System.Drawing.Point(165, 59);
+            this.BusLoad.Location = new System.Drawing.Point(119, 54);
             this.BusLoad.Name = "BusLoad";
             this.BusLoad.Size = new System.Drawing.Size(65, 12);
             this.BusLoad.TabIndex = 10;
@@ -108,18 +109,18 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.richTextBoxDisplay);
-            this.groupBox2.Location = new System.Drawing.Point(12, 110);
+            this.groupBox2.Location = new System.Drawing.Point(12, 101);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(422, 246);
+            this.groupBox2.Size = new System.Drawing.Size(320, 277);
             this.groupBox2.TabIndex = 37;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Lock Unlock Source";
             // 
             // richTextBoxDisplay
             // 
-            this.richTextBoxDisplay.Location = new System.Drawing.Point(7, 21);
+            this.richTextBoxDisplay.Location = new System.Drawing.Point(9, 20);
             this.richTextBoxDisplay.Name = "richTextBoxDisplay";
-            this.richTextBoxDisplay.Size = new System.Drawing.Size(409, 216);
+            this.richTextBoxDisplay.Size = new System.Drawing.Size(302, 248);
             this.richTextBoxDisplay.TabIndex = 0;
             this.richTextBoxDisplay.Text = "";
             // 
@@ -127,11 +128,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(448, 368);
+            this.ClientSize = new System.Drawing.Size(342, 389);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "S11 Lock Unlock Source";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

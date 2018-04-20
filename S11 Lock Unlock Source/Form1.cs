@@ -1,6 +1,4 @@
-﻿using canTransport;
-using Dongzr.MidiLite;
-using SecurityAccess;
+﻿using Dongzr.MidiLite;
 using System;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -13,15 +11,16 @@ namespace S11_Lock_Unlock_Source
     {
 
         can_driver driver = new can_driver();
-        canTrans driverTrans = new canTrans();
-        SecurityKey securityDriver = new SecurityKey();
 
         int tx_id = 0x740;
         int rx_id = 0x750;
-        byte[] tx_data, rx_data = new byte[8];
+        byte[] tx_data = new byte[4] { 0x03, 0x22, 0xFD, 0xFF };
+        byte[] rx_data = new byte[8];
+        string message;
+        string[] rx_message = new string[4];
 
         int dlc;
-        long timestamp = 0;
+        long timestamp;
         bool rx_success = false;
 
         public Form1()
@@ -43,17 +42,15 @@ namespace S11_Lock_Unlock_Source
 
         private void BusButton_Click(object sender, EventArgs e)
         {
-            if (BusButton.Text == "Off-Line")//bus on和 bus off 对整个应用程序（包括子窗体）有绝对的控制功能
+            if (BusButton.Text == "Bus On")//bus on和 bus off 对整个应用程序（包括子窗体）有绝对的控制功能
             {
                 if (driver.OpenChannel(comboBoxCanDevice.SelectedIndex, comboBoxCanBaudRate.Text) == true)
                 {
-                    BusButton.Text = "On-Line";
-                    driverTrans.Start();
+                    BusButton.Text = "Bus Off";
                     mmTimer.Start();
-                    comboBoxCanDevice.Enabled = true;
-                    comboBoxCanBaudRate.Enabled = true;
-                    ReadButton.Text = "Start";
                     t_Start();
+                    comboBoxCanDevice.Enabled = false;
+                    comboBoxCanBaudRate.Enabled = false;
                 }
                 else
                 {
@@ -63,20 +60,22 @@ namespace S11_Lock_Unlock_Source
             else
             {
                 driver.CloseChannel();
-                BusButton.Text = "Off-Line";
-                driverTrans.Stop();
+                BusButton.Text = "Bus On";
                 t_Stop();
                 mmTimer.Stop();
-                comboBoxCanDevice.Enabled = false;
-                comboBoxCanBaudRate.Enabled = false;
+                comboBoxCanDevice.Enabled = true;
+                comboBoxCanBaudRate.Enabled = true;
             }
         }
 
         private void ReadButton_Click(object sender, EventArgs e)
         {
-            if (BusButton.Text == "Off-Line")
+            if (BusButton.Text == "Bus Off")
             {
-                driver.WriteData(rx_id,rx_data,4,out time);
+                long time;
+                driver.WriteData(tx_id, tx_data, 4, out time);
+                richTextBoxDisplay.AppendText(" $" + tx_id.ToString("X3") + ": 4  " + HexToStrings(tx_data, " ") + "             " + (time / 1000).ToString() + "." + (time % 1000).ToString("000") + "\r\n");
+                richTextBoxDisplay.ScrollToCaret();
             }
         }
 
@@ -122,7 +121,7 @@ namespace S11_Lock_Unlock_Source
             {
                 EventHandler BusLoadUpdate = delegate
                 {
-                   BusLoad.Text = "Bus Load：" + driver.BusLoad().ToString() + "% ";
+                    BusLoad.Text = "Bus Load：" + driver.BusLoad().ToString() + "% ";
                 };
                 try { Invoke(BusLoadUpdate); } catch { };
             };
@@ -171,7 +170,7 @@ namespace S11_Lock_Unlock_Source
             }
         }
         #endregion
-        
+
         #region thread t_Receive
         Thread t_Receive;
         private void t_Receive_Thread()
@@ -193,10 +192,22 @@ namespace S11_Lock_Unlock_Source
             rx_success = driver.ReadData(out rx_id, ref rx_data, out dlc, out timestamp);//接收一帧数据
             if (rx_success)
             {
-                //sw.WriteLine("$" + id.ToString("X3") + " " + dlc.ToString() + " " + HexToStrings(data, " ") + (timestamp / 1000).ToString() + "." + (timestamp % 1000).ToString());
-                if ((rx_data[0] + rx_data[1] + rx_data[2] + rx_data[3]) == (0x07 + 0x67 + 0xFD + 0xFF))//
+                if ((rx_data[0] + rx_data[1] + rx_data[2] + rx_data[3]) == (0x07 + 0x62 + 0xFD + 0xFF))//
                 {
-
+                    for (int i = 4; i < 8; i++)
+                    {
+                       rx_message[i-4]= Analysis(rx_data[i], message);
+                    }
+                    EventHandler Display = delegate
+                    {
+                        richTextBoxDisplay.AppendText(" $" + rx_id.ToString("X3") + ": " + dlc.ToString() + "  " + HexToStrings(rx_data, " ") + " " + (timestamp / 1000).ToString() + "." + (timestamp % 1000).ToString("000") + "\r\n");
+                        richTextBoxDisplay.AppendText(" >The 1st Source is: " + rx_message[0] + "\r\n" +
+                                                      " >The 2nd Source is: " + rx_message[1] + "\r\n" +
+                                                      " >The 3rd Source is: " + rx_message[2] + "\r\n" +
+                                                      " >The 4th Source is: " + rx_message[3] + "\r\n\r\n");
+                        richTextBoxDisplay.ScrollToCaret();
+                    };
+                    try { Invoke(Display); } catch { };
                 }
             }
         }
@@ -221,7 +232,76 @@ namespace S11_Lock_Unlock_Source
                 Thread.Sleep(timespan);
             }
         }
-        #endregion
+        #endregion        
+
+        /*解析FDFF中的锁源信息*/
+        public string Analysis(byte data, string strings)
+        {
+            switch (data)
+            {
+                case 0x03:
+                    strings = "RF LOCK";
+                    break;
+                case 0x02:
+                    strings = "RF UNLOCK";
+                    break;
+                case 0x05:
+                    strings = "PEPS_RKE LOCK";
+                    break;
+                case 0x04:
+                    strings = "PEPS_RKE UNLOCK";
+                    break;
+                case 0x07:
+                    strings = "PEPS_SMART LOCK";
+                    break;
+                case 0x06:
+                    strings = "PEPS_SMART UNLOCK";
+                    break;
+                case 0x09:
+                    strings = "PEPS_RKE_AUTOLOCK";
+                    break;
+                case 0x0B:
+                    strings = "PEPS_SMART_AUTOLOCK";
+                    break;
+                case 0x15:
+                    strings = "MECH UNLOCK";
+                    break;
+                case 0x14:
+                    strings = "MECH LOCK";
+                    break;
+                case 0x17:
+                    strings = "CENTRAL LOCK";
+                    break;
+                case 0x16:
+                    strings = "CENTRAL UNLOCK";
+                    break;
+                case 0x18:
+                    strings = "AIRBAG_UNLOCK";
+                    break;
+                case 0x1B:
+                    strings = "ALARM_AUTO_LOCK";
+                    break;
+                case 0x1C:
+                    strings = "KEYOFF_AUTO_UNLOCK";
+                    break;
+                case 0x1F:
+                    strings = "SPEED LOCK";
+                    break;
+                case 0x1E:
+                    strings = "SPEED UNLOCK";
+                    break;
+                case 0x21:
+                    strings = "IOCONTROL LOCK";
+                    break;
+                case 0x20:
+                    strings = "IOCONTROL UNLOCK";
+                    break;
+                case 0x22:
+                    strings = "UNLOCK_BY_DOOR_OPEN";
+                    break;
+            }
+            return strings;
+        }
 
         /*将十六进制数组转换成十六进制字符串，并以space隔开*/
         public string HexToStrings(byte[] hex, string space)
